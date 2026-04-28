@@ -4,44 +4,29 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.activity.viewModels
+import com.example.saltsdecavall.ui.screens.Pantalla
+import com.example.saltsdecavall.ui.screens.Pantalla1
+import com.example.saltsdecavall.ui.screens.Pantalla2
+import com.example.saltsdecavall.ui.screens.Pantalla3
+import com.example.saltsdecavall.ui.screens.PaginViewModel
 import com.example.saltsdecavall.ui.theme.SaltsDeCavallTheme
 
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: PaginViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             SaltsDeCavallTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                when (viewModel.pantallaActual) {
+                    Pantalla.FORMULARI -> Pantalla1(viewModel)
+                    Pantalla.RESOLENT  -> Pantalla2()
+                    Pantalla.RESULTATS -> Pantalla3(viewModel)
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SaltsDeCavallTheme {
-        Greeting("Android")
     }
 }
