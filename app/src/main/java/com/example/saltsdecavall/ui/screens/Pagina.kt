@@ -1,4 +1,4 @@
-package com.example.saltsdecavall.screens
+package com.example.saltsdecavall.ui.screens
 
 import androidx.compose.runtime.Composable
 
