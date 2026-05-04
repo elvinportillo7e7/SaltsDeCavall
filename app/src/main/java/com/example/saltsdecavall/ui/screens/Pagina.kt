@@ -222,8 +222,15 @@ fun Pantalla3(viewModel: PaginViewModel) {
             item {
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = "S'han trobat ${viewModel.solucions.size} solucions",
+                    text = if (viewModel.hiHaSolucio == true)
+                        "S'han trobat ${viewModel.solucions.size} solucions"
+                    else
+                        "No s'ha trobat cap solució",
                     style = MaterialTheme.typography.headlineSmall,
+                    color = if (viewModel.hiHaSolucio == true)
+                        MaterialTheme.colorScheme.onSurface
+                    else
+                        MaterialTheme.colorScheme.error,
                     textAlign = TextAlign.Center
                 )
             }
@@ -321,7 +328,7 @@ private fun TaulerVisual(board: Array<IntArray>) {
                                 text = if (esInici) "♞" else moviment.toString(),
                                 fontSize = if (n <= 6) 14.sp else if (n <= 8) 11.sp else 8.sp,
                                 fontWeight = if (esInici) FontWeight.Bold else FontWeight.Normal,
-                                color = if (esInici) onPrimaryContainer else onSurface,
+                                color = Color.Black,
                                 textAlign = TextAlign.Center
                             )
                         }

@@ -37,6 +37,8 @@ class PaginViewModel : ViewModel() {
 
     var solucions by mutableStateOf<List<Array<IntArray>>>(emptyList())
         private set
+    var hiHaSolucio by mutableStateOf<Boolean?>(null)  // null = encara no s'ha resolt
+        private set
     var solucioSeleccionadaIndex by mutableStateOf(0)
         private set
     var dropdownExpanded by mutableStateOf(false)
@@ -83,10 +85,11 @@ class PaginViewModel : ViewModel() {
 
         pantallaActual = Pantalla.RESOLENT
         viewModelScope.launch(Dispatchers.Default) {
-            val joc = Joc()
-            joc.resolver(0)
+            val joc = Joc(mida!!, maxRes!!, coordX!!, coordY!!)
+            joc.resolver(1)
             withContext(Dispatchers.Main) {
                 solucions = joc.solucions
+                hiHaSolucio = joc.teSolucio()
                 solucioSeleccionadaIndex = 0
                 pantallaActual = Pantalla.RESULTATS
             }
@@ -96,6 +99,7 @@ class PaginViewModel : ViewModel() {
     fun tornarAlFormulari() {
         pantallaActual = Pantalla.FORMULARI
         solucions = emptyList()
+        hiHaSolucio = null
         solucioSeleccionadaIndex = 0
     }
 }
