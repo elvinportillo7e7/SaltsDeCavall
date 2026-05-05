@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
             SaltsDeCavallTheme {
                 when (viewModel.pantallaActual) {
                     Pantalla.FORMULARI -> Pantalla1(viewModel)
-                    Pantalla.RESOLENT  -> Pantalla2()
+                    Pantalla.RESOLENT  -> Pantalla2(viewModel)
                     Pantalla.RESULTATS -> Pantalla3(viewModel)
                 }
             }

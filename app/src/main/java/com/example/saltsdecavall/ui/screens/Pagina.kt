@@ -151,7 +151,7 @@ fun Pantalla1(viewModel: PaginViewModel) {
 }
 
 @Composable
-fun Pantalla2() {
+fun Pantalla2(viewModel: PaginViewModel) {
     val infiniteTransition = rememberInfiniteTransition(label = "knight_bounce")
     val offsetY by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -182,6 +182,16 @@ fun Pantalla2() {
             Text(
                 text = "Resolent el problema...",
                 style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = "Solucions trobades: ${viewModel.solucionsEncontrades} / ${viewModel.maxSolucionsActual}",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = "En queden: ${viewModel.maxSolucionsActual - viewModel.solucionsEncontrades}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
                 text = "Això pot trigar uns moments...",
@@ -223,7 +233,7 @@ fun Pantalla3(viewModel: PaginViewModel) {
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text = if (viewModel.hiHaSolucio == true)
-                        "S'han trobat ${viewModel.solucions.size} solucions"
+                        "S'han trobat ${viewModel.numSolucions} solucions"
                     else
                         "No s'ha trobat cap solució",
                     style = MaterialTheme.typography.headlineSmall,
@@ -268,7 +278,7 @@ fun Pantalla3(viewModel: PaginViewModel) {
 
                 item {
                     TaulerVisual(
-                        board = viewModel.solucions[viewModel.solucioSeleccionadaIndex]
+                        board = viewModel.mostrarTaulerSeleccionat() ?: emptyArray()
                     )
                 }
             } else {

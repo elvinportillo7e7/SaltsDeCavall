@@ -2,11 +2,12 @@ package com.example.saltsdecavall.component
 
 //component principal que estableix la llogica del joc
 class Joc(
-    private val mida: Int,          // mida del taulell, sempre quadrat
-    private val maxSolucions: Int,  // quantes solucions volem trobar abans de parar
-    private val startX: Int,        // columna inicial del cavall
-    private val startY: Int         // fila inicial del cavall
+    private var mida: Int,          // mida del taulell, sempre quadrat
+    private var maxSolucions: Int,  // quantes solucions volem trobar abans de parar
+    private var startX: Int,        // columna inicial del cavall
+    private var startY: Int         // fila inicial del cavall
 ) {
+
     // Taulell de joc: taulell[fila][columna]. A cada cel·la se li asigna un numero en funcio de en quin moviment ha passat per aquesta
     // les que el cavall encara pot visitar s'asignen amb 0.
     var taulell: Array<IntArray> = emptyArray()
@@ -18,12 +19,12 @@ class Joc(
     private val dx = intArrayOf( 2,  1, -1, -2, -2, -1,  1,  2)
     private val dy = intArrayOf( 1,  2,  2,  1, -1, -2, -2, -1)
 
-    private val movIndex = IntArray(mida * mida + 1) { -1 }
+    private var movIndex = IntArray(mida * mida + 1) { -1 }
 
     // px[nivel] i py[nivel]: columna i fila del cavall quan es troba al nivell 'nivel'.
     // Exemple: px[1]=startX, py[1]=startY és la posició inicial (pas 1).
-    private val px = IntArray(mida * mida + 1)
-    private val py = IntArray(mida * mida + 1)
+    private var px = IntArray(mida * mida + 1)
+    private var py = IntArray(mida * mida + 1)
 
     // Posició candidata que s'està avaluant en cada iteració del bucle.
     private var candidatX = 0
@@ -33,11 +34,40 @@ class Joc(
     private var nivelActual = 0
 
     init {
+        if (mida > 0) initializeState()
+    }
+
+    constructor() : this(0, 0, 0, 0)
+
+    private fun initializeState() {
         taulell = initTab(mida)
         taulell[startY][startX] = 1  // col·loquem el cavall a la posició inicial (pas 1)
+        movIndex = IntArray(mida * mida + 1) { -1 }
+        px = IntArray(mida * mida + 1)
+        py = IntArray(mida * mida + 1)
         px[1] = startX
         py[1] = startY
     }
+
+    // Inicialitza el joc amb els paràmetres donats. midaTauler s'accepta com a String.
+    fun pedirInfo(midaTauler: String, numMaxResolucions: Int, CoordXCavall: Int, CoordYCavall: Int) {
+        mida = midaTauler.toInt()
+        maxSolucions = numMaxResolucions
+        startX = CoordXCavall
+        startY = CoordYCavall
+        solucions.clear()
+        candidatX = 0
+        candidatY = 0
+        nivelActual = 0
+        initializeState()
+    }
+
+    // Retorna el número de solucions trobades fins ara.
+    val numSolucions: Int get() = solucions.size
+
+    // Retorna el taulell de la solució indicada (índex 1-basat), o null si no existeix.
+    fun mostrarMenu(numeroSolucióABuscar: Int): Array<IntArray>? =
+        solucions.getOrNull(numeroSolucióABuscar - 1)
 
     // Algorisme de backtracking
     // 'nivel' representa quants passos ja té el cavall sobre el taulell.
@@ -110,8 +140,11 @@ class Joc(
         candidatY in 0 until mida &&
         taulell[candidatY][candidatX] == 0
 
+    var onSolutionFound: ((Int) -> Unit)? = null
+
     // guarda una còpia del taulell com a solucio
     fun tractarSolucio(taulell: Array<IntArray>) {
         solucions.add(taulell.map { it.clone() }.toTypedArray())
+        onSolutionFound?.invoke(solucions.size)
     }
 }

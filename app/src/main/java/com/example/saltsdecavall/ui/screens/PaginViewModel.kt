@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.saltsdecavall.component.Joc
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -44,6 +45,15 @@ class PaginViewModel : ViewModel() {
     var dropdownExpanded by mutableStateOf(false)
         private set
 
+    var solucionsEncontrades by mutableStateOf(0)
+        private set
+    var maxSolucionsActual by mutableStateOf(0)
+        private set
+    var numSolucions by mutableStateOf(0)
+        private set
+
+    private var joc: Joc? = null
+
     fun onMidaTaulerChange(v: String) {
         midaTauler = v; errorMidaTauler = null
     }
@@ -68,6 +78,9 @@ class PaginViewModel : ViewModel() {
         solucioSeleccionadaIndex = i; dropdownExpanded = false
     }
 
+    fun mostrarTaulerSeleccionat(): Array<IntArray>? =
+        joc?.mostrarMenu(solucioSeleccionadaIndex + 1)
+
     fun iniciarJuego() {
         val mida = midaTauler.toIntOrNull()
         val maxRes = numMaxResolucions.toIntOrNull()
@@ -83,13 +96,27 @@ class PaginViewModel : ViewModel() {
         }
         if (!valid) return
 
+        solucionsEncontrades = 0
+        maxSolucionsActual = maxRes!!
         pantallaActual = Pantalla.RESOLENT
+
+        val progressChannel = Channel<Int>(Channel.CONFLATED)
+        viewModelScope.launch {
+            for (count in progressChannel) {
+                solucionsEncontrades = count
+            }
+        }
         viewModelScope.launch(Dispatchers.Default) {
-            val joc = Joc(mida!!, maxRes!!, coordX!!, coordY!!)
-            joc.resolver(1)
+            val jocInstance = Joc()
+            jocInstance.pedirInfo(midaTauler, maxRes, coordX!!, coordY!!)
+            jocInstance.onSolutionFound = { count -> progressChannel.trySend(count) }
+            jocInstance.resolver(1)
+            progressChannel.close()
             withContext(Dispatchers.Main) {
-                solucions = joc.solucions
-                hiHaSolucio = joc.teSolucio()
+                joc = jocInstance
+                solucions = jocInstance.solucions
+                numSolucions = jocInstance.numSolucions
+                hiHaSolucio = jocInstance.teSolucio()
                 solucioSeleccionadaIndex = 0
                 pantallaActual = Pantalla.RESULTATS
             }
@@ -101,5 +128,7 @@ class PaginViewModel : ViewModel() {
         solucions = emptyList()
         hiHaSolucio = null
         solucioSeleccionadaIndex = 0
+        joc = null
+        numSolucions = 0
     }
 }
