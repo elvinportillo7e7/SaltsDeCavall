@@ -39,7 +39,7 @@ class Joc(
         py[1] = startY
     }
 
-    // Algorisme de backtracking iteratiu.
+    // Algorisme de backtracking
     // 'nivel' representa quants passos ja té el cavall sobre el taulell.
     // S'ha de cridar amb resolver(1) perquè el primer pas ja és al taulell.
     fun resolver(nivel: Int) {
@@ -49,7 +49,7 @@ class Joc(
         while (nivel > 0 && solucions.size < maxSolucions) {
             nivelActual = nivel
             if (hihaSeguentNodo()) {
-                seguentNodo()               // calcula el següent candidat (ordre Warnsdorff)
+                seguentNodo()               // calcula el següent candidat
                 if (nodo_valid()) {
                     // Col·loquem el cavall: el nou pas és nivel+1
                     taulell[candidatY][candidatX] = nivel + 1
@@ -61,18 +61,18 @@ class Joc(
                         taulell[candidatY][candidatX] = 0  // desfem per seguir buscant
                     } else {
                         nivel++
-                        inicialitzarNivell(nivel)  // calculem l'ordre Warnsdorff del nou nivell
+                        inicialitzarNivell(nivel)
                     }
                 }
             } else {
-                // Esgotats tots els moviments en aquest nivell → backtrack
-                if (nivel > 1) taulell[py[nivel]][px[nivel]] = 0  // desfer el pas actual
+                // se han hecho tots els moviments en aquest nivell → backtrack
+                if (nivel > 1) taulell[py[nivel]][px[nivel]] = 0  // deshacer nivel actual
                 nivel--  // tornem al nivell anterior
             }
         }
     }
 
-    // Inicialitza el nivell 'nivel': posa movIndex a -1.
+    // inicialitza el nivell 'nivel': posa movIndex a -1.
     private fun inicialitzarNivell(nivel: Int) {
         movIndex[nivel] = -1
     }
@@ -87,10 +87,10 @@ class Joc(
         return taulell.all { fila -> fila.all { cel -> cel >= 1 } }
     }
 
-    // Retorna true si hi ha solució (s'ha de cridar després de resolver()).
+    // Retorna true si hi ha solució.
     fun teSolucio(): Boolean = solucions.isNotEmpty()
 
-    // Retorna true si encara queden moviments per provar en el nivell actual
+    // retorna true si encara queden moviments per provar en el nivell actual
     // (els moviments es numeren de 0 a 7).
     fun hihaSeguentNodo(): Boolean = movIndex[nivelActual] < 7
 
@@ -102,15 +102,15 @@ class Joc(
         candidatY = py[nivelActual] + dy[movIndex[nivelActual]]
     }
 
-    // Un candidat és vàlid si:
-    //   1. La posició (candidatX, candidatY) és dins del taulell.
-    //   2. La cel·la no ha estat visitada encara (valor == 0).
+    // Un candidat es valid si:
+    //    la posició (candidatX, candidatY) es dins del taulell.
+    //   la cel·la no ha estat visitada encara (valor == 0).
     fun nodo_valid(): Boolean =
         candidatX in 0 until mida &&
         candidatY in 0 until mida &&
         taulell[candidatY][candidatX] == 0
 
-    // Guarda una còpia profunda del taulell actual com a nova solució.
+    // guarda una còpia del taulell com a solucio
     fun tractarSolucio(taulell: Array<IntArray>) {
         solucions.add(taulell.map { it.clone() }.toTypedArray())
     }
